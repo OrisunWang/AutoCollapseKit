@@ -98,3 +98,15 @@ xcodebuild -workspace AutoCollapseKitDemo.xcworkspace -scheme AutoCollapseKitDem
 正式发布元数据的 pod lib lint 已通过，包含 Core、SnapKit、Masonry 与默认 subspec 编译和导入校验。没有使用 --private、--allow-warnings、--skip-tests 或 --skip-import-validation；仅通过 XCODE_XCCONFIG_FILE 在本机工具链下覆盖构建目标为 iOS 15，podspec 保持 iOS 13。日志为 `.build/release/local-lint.log`。重新 pod install 后签名和 Bundle ID 与先前设置一致。
 
 源码行为沿用前述测试结果，本次仅修改发布元数据和文档。远程标签校验及 trunk 结果在发布后继续记录，不把本地校验等同于 trunk 发布成功。
+
+## 0.1.0 发布结果
+
+2026-10-12（Asia/Shanghai）首次发布完成：
+
+- 发布提交 c10ef5499af23d138c23bc7844b89c4f1216d42e；main 与带注释的 0.1.0 标签已推送至指定 GitHub 仓库。远程标签解引用指向该发布提交，公开 raw podspec 与本地文件一致。
+- pod spec lint 从远程 tag 下载校验，全部 subspec 编译与导入通过；未使用允许警告或跳过检查选项。日志 `.build/release/remote-lint.log`。
+- pod trunk push AutoCollapseKit.podspec --use-modular-headers 返回 AutoCollapseKit (0.1.0) successfully published。日志 `.build/release/trunk-push.log`。
+- pod trunk info 显示 0.1.0，服务端发布时间为 2026-10-12 03:28:36 UTC。trunk 官方规范接口返回的 canonical JSON 与本地 pod ipc spec 结果完全一致；仓库、标签、MIT 许可、作者、默认 Core 及适配依赖均一致。
+- CocoaPods 页面：https://cocoapods.org/pods/AutoCollapseKit。版本源码：https://github.com/OrisunWang/AutoCollapseKit/tree/0.1.0。
+
+发布使用本机现有 SSH GitHub 认证和有效 trunk 会话，无凭据入库。LICENSE、版本接入说明、CHANGELOG 和发布流程均已提交；生成依赖、构建产物及用户状态文件排除在仓库之外。签名配置和 Bundle ID 保持原值。iOS 13 的构建运行验证限制仍与前文一致。

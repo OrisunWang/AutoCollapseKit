@@ -2,7 +2,7 @@
 
 按需标记 UIKit 约束，在视图隐藏时应用折叠常量，显示时恢复最新展开值。支持原生 Auto Layout、SnapKit、Masonry，以及同一视图混用。
 
-库支持 iOS 13+，Swift 5。演示 App 使用 Swift + UIKit 实现，最低 iOS 15。版本 `0.1.0`；源码仓库为 [OrisunWang/AutoCollapseKit](https://github.com/OrisunWang/AutoCollapseKit)。默认安装 Core，不自动引入两套布局库。
+库支持 iOS 13+，Swift 5。演示 App 使用 Swift + UIKit 实现，最低 iOS 15。版本 [`0.1.0`](https://cocoapods.org/pods/AutoCollapseKit) 已发布至 CocoaPods trunk；源码仓库为 [OrisunWang/AutoCollapseKit](https://github.com/OrisunWang/AutoCollapseKit)。默认安装 Core，不自动引入两套布局库。
 
 ## CocoaPods 接入
 
