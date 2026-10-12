@@ -1,0 +1,40 @@
+# New local demo targets; no team, certificates or provisioning profiles are configured.
+name: AutoCollapseKitDemo
+options:
+  # Project-only presets omit XcodeGen target signing identity defaults.
+  settingPresets: project
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    SDKROOT: iphoneos
+    LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks @loader_path/Frameworks"
+    SWIFT_VERSION: "5.0"
+    GENERATE_INFOPLIST_FILE: YES
+    TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  AutoCollapseKitDemo:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    # UIKit needs a declared scene delegate when an existing scene session is restored.
+    info:
+      path: Info.plist
+      properties:
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: AutoCollapseKit
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).ACKDemoSceneDelegate
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.AutoCollapseKitDemo
+        SWIFT_OBJC_BRIDGING_HEADER: Sources/Example-Bridging-Header.h
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: AutoCollapseKit
+schemes:
+  AutoCollapseKitDemo:
+    build:
+      targets:
+        AutoCollapseKitDemo: all

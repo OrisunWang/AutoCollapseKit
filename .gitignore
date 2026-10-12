@@ -1,0 +1,7 @@
+# Generated dependencies and local validation products.
+Pods/
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store

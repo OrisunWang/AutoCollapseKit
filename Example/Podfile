@@ -1,0 +1,24 @@
+# Modular dependency headers support the mixed Swift/Objective-C static framework.
+# The demonstration uses iOS 15 UIKit button configurations; the library still declares iOS 13.
+platform :ios, '15.0'
+use_frameworks! :linkage => :static
+use_modular_headers!
+project 'AutoCollapseKitDemo.xcodeproj'
+target 'AutoCollapseKitDemo' do
+  pod 'AutoCollapseKit/SnapKit', :path => '..'
+  pod 'AutoCollapseKit/Masonry', :path => '..'
+end
+
+# Xcode 27 requires at least iOS 15 even for dependency targets. Apply a floor
+# only inside this example so pod install preserves it without lowering newer targets.
+post_install do |installer|
+  minimum_demo_target = Gem::Version.new('15.0')
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |configuration|
+      current = configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if current.nil? || Gem::Version.new(current) < minimum_demo_target
+        configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = minimum_demo_target.to_s
+      end
+    end
+  end
+end

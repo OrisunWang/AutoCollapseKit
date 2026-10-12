@@ -1,0 +1,32 @@
+PODS:
+  - AutoCollapseKit/Core (0.1.0)
+  - AutoCollapseKit/Masonry (0.1.0):
+    - AutoCollapseKit/Core
+    - Masonry (~> 1.1)
+  - AutoCollapseKit/SnapKit (0.1.0):
+    - AutoCollapseKit/Core
+    - SnapKit (~> 5.6)
+  - Masonry (1.1.0)
+  - SnapKit (5.7.1)
+
+DEPENDENCIES:
+  - AutoCollapseKit/Masonry (from `..`)
+  - AutoCollapseKit/SnapKit (from `..`)
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+    - SnapKit
+
+EXTERNAL SOURCES:
+  AutoCollapseKit:
+    :path: ".."
+
+SPEC CHECKSUMS:
+  AutoCollapseKit: db82c2a256c95e4d58d976d30c36dd8af065b3e8
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+
+PODFILE CHECKSUM: 7f1787c64fe653669907db6db8e365a90d4e61ad
+
+COCOAPODS: 1.16.2
