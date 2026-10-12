@@ -5,9 +5,14 @@ import argparse
 import subprocess
 
 
-def generate(root: Path, combination: str, linkage: str, snapkit_version: str | None) -> Path:
-    """Generate sources/configuration only; CocoaPods installation is a separate step."""
-    suffix = f'-snapkit{snapkit_version}' if snapkit_version else ''
+def generate(root: Path, combination: str, linkage: str, snapkit_version: str | None, masonry_version: str | None = None) -> Path:
+    """Generate sources/configuration; optional exact pins select historical dependency fixtures.
+
+    Callers supply each library version independently; CocoaPods installation is separate.
+    """
+    # Version pins identify separate fixtures so historical Pods and build results cannot leak.
+    suffix = (f'-snapkit{snapkit_version}' if snapkit_version else '')
+    suffix += f'-masonry{masonry_version}' if masonry_version else ''
     fixture = root / '.build' / 'fixtures' / f'{combination}-{linkage}{suffix}'
     fixture.mkdir(parents=True, exist_ok=True)
     snap = combination in ('snapkit', 'both')
@@ -73,6 +78,9 @@ targets:
     pods = '\n'.join(f"  pod 'AutoCollapseKit/{adapter}', :path => '{root}'" for adapter in selected)
     if snap and snapkit_version:
         pods += f"\n  pod 'SnapKit', '{snapkit_version}'"
+    # Pin Masonry independently to verify the oldest supported Objective-C adapter.
+    if masonry and masonry_version:
+        pods += f"\n  pod 'Masonry', '{masonry_version}'"
     framework_line = "use_frameworks! :linkage => :static\n" if linkage == 'framework' else ''
     (fixture / 'Podfile').write_text(f'''platform :ios, '13.0'
 {framework_line}use_modular_headers!
@@ -93,14 +101,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--combination', choices=['core', 'snapkit', 'masonry', 'both', 'all'], default='all')
     parser.add_argument('--linkage', choices=['library', 'framework', 'all'], default='all')
-    parser.add_argument('--snapkit-version', help='Optional minimum-version compatibility pin (5.6.0).')
+    parser.add_argument('--snapkit-version', help='Optional exact SnapKit version for compatibility validation.')
+    parser.add_argument('--masonry-version', help='Optional exact Masonry version for compatibility validation.')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     combinations = ['core', 'snapkit', 'masonry', 'both'] if args.combination == 'all' else [args.combination]
     linkages = ['library', 'framework'] if args.linkage == 'all' else [args.linkage]
     for combination in combinations:
         for linkage in linkages:
-            print(generate(root, combination, linkage, args.snapkit_version))
+            print(generate(root, combination, linkage, args.snapkit_version, args.masonry_version))
 
 
 if __name__ == '__main__':

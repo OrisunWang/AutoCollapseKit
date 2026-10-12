@@ -40,3 +40,9 @@ Core 不自动解除约束或修正业务布局冲突；标记的是 constant �
 演示 App 最低 iOS 15。Example Podfile 同步声明 iOS 15，并在 post_install 中将依赖目标的部署版本设为至少 iOS 15，保证重新安装依赖后的 Xcode 直接构建可用；不降低更高版本的依赖目标，不修改库的 iOS 13 声明或签名相关配置。
 
 UIKit 演示入口通过 AppDelegate 提供 scene 配置，Example/Info.plist 显式登记 ACKDemoSceneDelegate，保证已有场景恢复时仍创建窗口。project.yml 是该场景配置的生成来源。页面状态读取已安装的 NSLayoutConstraint.constant，展示真实折叠结果；三个页面分别持有自己的开关和展开高度。
+
+## 适配依赖版本范围
+
+当前源码允许 SnapKit `>= 4.0.1, < 6.0`、Masonry `>= 0.5.3, < 2.0`。下限来自原始历史源码检查及真实构建、布局测试：SnapKit 4.0.1 修复新版 Swift Auto Layout 类型别名并声明 Swift 版本；Masonry 0.5.3 修复旧枚举优先级的编译问题。SnapKit 6.0.0 已移除 podspec，当前 CocoaPods 接入不扩展至该主版本；Masonry 私有接口保持主版本上限，避免接受未经检查的未来内部实现。
+
+标记、更新、折叠与恢复逻辑沿用现有实现，无需针对旧版本增加分支或修改第三方源码。具体历史源码依据、验证组合与发布生效范围见 Validation.md 的“依赖范围放宽”。

@@ -1,11 +1,11 @@
 PODS:
-  - AutoCollapseKit/Core (0.1.0)
-  - AutoCollapseKit/Masonry (0.1.0):
+  - AutoCollapseKit/Core (0.1.1)
+  - AutoCollapseKit/Masonry (0.1.1):
     - AutoCollapseKit/Core
-    - Masonry (~> 1.1)
-  - AutoCollapseKit/SnapKit (0.1.0):
+    - Masonry (< 2.0, >= 0.5.3)
+  - AutoCollapseKit/SnapKit (0.1.1):
     - AutoCollapseKit/Core
-    - SnapKit (~> 5.6)
+    - SnapKit (< 6.0, >= 4.0.1)
   - Masonry (1.1.0)
   - SnapKit (5.7.1)
 
@@ -23,7 +23,7 @@ EXTERNAL SOURCES:
     :path: ".."
 
 SPEC CHECKSUMS:
-  AutoCollapseKit: db82c2a256c95e4d58d976d30c36dd8af065b3e8
+  AutoCollapseKit: 5072fd37c7d7aec151089253299156eef66646c2
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
 

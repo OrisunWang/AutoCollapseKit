@@ -1,6 +1,6 @@
 # 发布流程
 
-仓库：https://github.com/OrisunWang/AutoCollapseKit。首次发布版本为 0.1.0，tag 名称与 podspec 的 version 完全一致，不添加 v 前缀。trunk 发布需要维护者本机已有有效会话；凭据不保存到仓库。
+仓库：https://github.com/OrisunWang/AutoCollapseKit。当前版本为 0.1.1，首次发布版本为 0.1.0，tag 名称与 podspec 的 version 完全一致，不添加 v 前缀。trunk 发布需要维护者本机已有有效会话；凭据不保存到仓库。
 
 ## 发布准备
 

@@ -2,7 +2,9 @@
 
 按需标记 UIKit 约束，在视图隐藏时应用折叠常量，显示时恢复最新展开值。支持原生 Auto Layout、SnapKit、Masonry，以及同一视图混用。
 
-库支持 iOS 13+，Swift 5。演示 App 使用 Swift + UIKit 实现，最低 iOS 15。版本 [`0.1.0`](https://cocoapods.org/pods/AutoCollapseKit) 已发布至 CocoaPods trunk；源码仓库为 [OrisunWang/AutoCollapseKit](https://github.com/OrisunWang/AutoCollapseKit)。默认安装 Core，不自动引入两套布局库。
+库支持 iOS 13+，Swift 5。演示 App 使用 Swift + UIKit 实现，最低 iOS 15。当前版本为 [`0.1.1`](https://cocoapods.org/pods/AutoCollapseKit)，通过 CocoaPods 接入；源码仓库为 [OrisunWang/AutoCollapseKit](https://github.com/OrisunWang/AutoCollapseKit)。默认安装 Core，不自动引入两套布局库。
+
+当前源码的适配依赖范围：SnapKit `>= 4.0.1, < 6.0`，Masonry `>= 0.5.3, < 2.0`；可沿用宿主项目在范围内的版本，无需升级到 5.6 / 1.1。0.1.1 提供放宽后的依赖范围；0.1.0 保留原范围。下限依据、历史版本编译限制与测试结果见 [docs/Validation.md](docs/Validation.md#依赖范围放宽)。
 
 ## CocoaPods 接入
 
@@ -10,30 +12,30 @@
 
 ```ruby
 # 原生 Auto Layout；等价于 AutoCollapseKit/Core。
-pod 'AutoCollapseKit', '~> 0.1.0'
+pod 'AutoCollapseKit', '~> 0.1.1'
 ```
 
 ```ruby
 # 仅 SnapKit，自动包含 Core 和 SnapKit。
-pod 'AutoCollapseKit/SnapKit', '~> 0.1.0'
+pod 'AutoCollapseKit/SnapKit', '~> 0.1.1'
 ```
 
 ```ruby
 # 仅 Masonry，自动包含 Core 和 Masonry，不编译本库的 Swift 适配源码。
-pod 'AutoCollapseKit/Masonry', '~> 0.1.0'
+pod 'AutoCollapseKit/Masonry', '~> 0.1.1'
 ```
 
 ```ruby
 # 同时接入；Core 共享，不重复安装。
-pod 'AutoCollapseKit/SnapKit', '~> 0.1.0'
-pod 'AutoCollapseKit/Masonry', '~> 0.1.0'
+pod 'AutoCollapseKit/SnapKit', '~> 0.1.1'
+pod 'AutoCollapseKit/Masonry', '~> 0.1.1'
 ```
 
 开发或调试本地源码时，把版本参数替换为 `:path`；从 GitHub 指定版本接入时使用 `:git` 和 `:tag`：
 
 ```ruby
 pod 'AutoCollapseKit/SnapKit', :path => '../AutoCollapseKit'
-pod 'AutoCollapseKit/Masonry', :git => 'https://github.com/OrisunWang/AutoCollapseKit.git', :tag => '0.1.0'
+pod 'AutoCollapseKit/Masonry', :git => 'https://github.com/OrisunWang/AutoCollapseKit.git', :tag => '0.1.1'
 ```
 
 Swift 与 Objective-C 混用时建议在 Podfile 添加 `use_modular_headers!`；这样 Masonry 等 Objective-C 依赖具有模块声明，支持 Swift Pod 以静态库接入。也支持 `use_frameworks! :linkage => :static`。库不修改宿主签名配置或依赖源码。
@@ -142,8 +144,9 @@ Example 的 Podfile 使用 iOS 15，并通过 `post_install` 将 Pods 各目标�
 python3 scripts/generate-validation.py
 # 运行全部组合的安装、构建和 XCTest，需安装 CocoaPods、XcodeGen 和模拟器。
 SIMULATOR_ID='<available-device-uuid>' bash scripts/validate.sh
-# 验证声明范围下限时可单独生成固定版本的组合。
-python3 scripts/generate-validation.py --combination snapkit --linkage framework --snapkit-version 5.6.0
+# 验证两个适配层的依赖下限；生成静态库和静态 framework 工作区。
+python3 scripts/generate-validation.py --combination both --linkage all \
+  --snapkit-version 4.0.1 --masonry-version 0.5.3
 ```
 
 测试工程产物位于忽略的 `.build/`。模拟器构建仅在 xcodebuild 调用中传入 `CODE_SIGNING_ALLOWED=NO`，不更改项目签名配置。实际验证结果见 [docs/Validation.md](docs/Validation.md)，完整行为设计见 [docs/Design.md](docs/Design.md)。

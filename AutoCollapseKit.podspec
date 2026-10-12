@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   # Public release metadata; source tags match the published semantic version.
   s.name = 'AutoCollapseKit'
-  s.version = '0.1.0'
+  s.version = '0.1.1'
   s.summary = 'Opt-in hidden constraint folding for UIKit, SnapKit and Masonry.'
   s.description = <<-DESC
     Mark selected Auto Layout constraints to collapse when their owning view hides,
@@ -30,13 +30,17 @@ Pod::Spec.new do |s|
   s.subspec 'SnapKit' do |adapter|
     adapter.source_files = 'Sources/SnapKit/**/*.swift'
     adapter.dependency 'AutoCollapseKit/Core'
-    adapter.dependency 'SnapKit', '~> 5.6'
+    # 4.0.1 adds Swift-version metadata and SDK-compatible Auto Layout aliases.
+    # SnapKit 6 removes CocoaPods support; retain the last CocoaPods major boundary.
+    adapter.dependency 'SnapKit', '>= 4.0.1', '< 6.0'
   end
 
   s.subspec 'Masonry' do |adapter|
     adapter.source_files = 'Sources/Masonry/**/*.{h,m}'
     adapter.public_header_files = 'Sources/Masonry/**/*.h'
     adapter.dependency 'AutoCollapseKit/Core'
-    adapter.dependency 'Masonry', '~> 1.1'
+    # 0.5.3 fixes priority constants that older releases cannot compile with modern SDKs.
+    # Keep an upper bound because this adapter relies on private installation selectors.
+    adapter.dependency 'Masonry', '>= 0.5.3', '< 2.0'
   end
 end

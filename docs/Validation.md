@@ -110,3 +110,48 @@ xcodebuild -workspace AutoCollapseKitDemo.xcworkspace -scheme AutoCollapseKitDem
 - CocoaPods 页面：https://cocoapods.org/pods/AutoCollapseKit。版本源码：https://github.com/OrisunWang/AutoCollapseKit/tree/0.1.0。
 
 发布使用本机现有 SSH GitHub 认证和有效 trunk 会话，无凭据入库。LICENSE、版本接入说明、CHANGELOG 和发布流程均已提交；生成依赖、构建产物及用户状态文件排除在仓库之外。签名配置和 Bundle ID 保持原值。iOS 13 的构建运行验证限制仍与前文一致。
+
+## 依赖范围放宽
+
+2026-10-12（Asia/Shanghai），当前源码将 SnapKit 从 `~> 5.6` 放宽至 `>= 4.0.1, < 6.0`，Masonry 从 `~> 1.1` 放宽至 `>= 0.5.3, < 2.0`。本次未修改运行时或适配逻辑，也未修改第三方源码。已发布的 0.1.0、Git 标签和 trunk 规范保持原范围；此变更随 0.1.1 发布，原 0.1.0 标签和 trunk 规范保持不变。
+
+### 历史源码依据
+
+下载两个官方仓库完整历史，对比适配所用的类型、安装、更新与底层约束接口：
+
+- SnapKit 3.0.0 的 `layoutConstraints` 为 private，3.2.0 虽已公开，但仍使用旧 SDK 的 Auto Layout 类型和浮点优先级。4.0.0 尚未修复新版 Swift 中已改名的 `NSLayoutRelation` / `NSLayoutAttribute`，并且 podspec 未声明 Swift 版本。直接以 Swift 5 编译原始 4.0.0 源码，报这两个类型已改名的错误，因此不把它纳入当前 Swift 5 接入范围。
+- [SnapKit 4.0.1 的类型别名](https://github.com/SnapKit/SnapKit/blob/4.0.1/Source/Typealiases.swift)添加 Swift 4.2 及以上的类型分支，[podspec](https://github.com/SnapKit/SnapKit/blob/4.0.1/SnapKit.podspec)声明 Swift 4.0；其 `ConstraintMakerFinalizable.constraint` 和 `Constraint.layoutConstraints` 已公开。4.0.1 与 4.2.0 的 Source 目录相同；到 5.0.0，本适配层涉及的三个文件仅 Constraint.swift 的弃用声明发生变化。随后检查 5.6.0 / 5.7.1 的对应接口和 constant 更新流程，适配无需版本分支。
+- [SnapKit 5.7.1 → 6.0.0 的变更](https://github.com/SnapKit/SnapKit/compare/5.7.1...6.0.0)移除了 SnapKit.podspec；6.0.0 的 Package.swift 要求 Swift tools 6.0、最低 iOS 14。当前库只提供 CocoaPods subspec，因此保留 `< 6.0`，未宣称支持 SnapKit 6。
+- Masonry 0.4.0 尚无 `mas_remakeConstraints`，0.5.0 加入复合属性链、remake 和更新时的 relation 匹配修复。但 0.5.0–0.5.2 的 MASUtilities.h 用枚举保存浮点优先级常量。固定 0.5.0 的真实工程构建失败：`integer constant expression must have integer type`。
+- [Masonry 0.5.3 的修复提交](https://github.com/SnapKit/Masonry/commit/4bf0d0f)将优先级定义改成有类型的常量，解决上述编译问题。[变更记录](https://github.com/SnapKit/Masonry/blob/v1.1.0/CHANGELOG.md)也记录该修复。检查 0.5.3、0.6.0、0.6.4、1.0.0 和 1.1.0 的 `MASViewConstraint.install`、`layoutConstraint`、`MASCompositeConstraint.childConstraints`，登记所需的选择器与安装后读取方式保持可用。由于使用私有接口，保留 `< 2.0`，避免自动接受未来主版本的内部实现变动。
+
+### 本次构建及行为测试
+
+环境沿用 Xcode 27.1、iOS 26.5 iPhone 17 Pro 模拟器。仅在 xcodebuild 调用中设置 `IPHONEOS_DEPLOYMENT_TARGET=15.0` 和 `CODE_SIGNING_ALLOWED=NO`；未改现有签名、证书及 Bundle ID。
+
+| 固定依赖组合 | 静态库 | 静态 framework | 每种配置测试数 |
+| --- | --- | --- | --- |
+| SnapKit 4.0.1 | 通过 | 通过 | 9 |
+| Masonry 0.5.3 | 通过 | 通过 | 8 |
+| SnapKit 4.0.1 + Masonry 0.5.3 | 通过 | 通过 | 12 |
+| SnapKit 5.7.1 + Masonry 1.1.0 | 通过 | 通过 | 12 |
+
+合计 82 次 XCTest、0 失败；逐项核对 Podfile.lock 的实际依赖版本。覆盖隐藏期间更新、复合约束、remake、原约束引用更新、失活后重新激活和两个适配层混用。区间内其他版本为历史源码检查，本次未逐版本运行测试；iOS 13 构建运行的既有限制仍然存在。
+
+验证生成脚本新增 `--masonry-version`，可以独立或同时固定两个库，并以版本后缀隔离工作区。复现下限组合：
+
+```sh
+python3 scripts/generate-validation.py --combination both --linkage all \
+  --snapkit-version 4.0.1 --masonry-version 0.5.3
+# 分别进入两个生成目录执行 pod install，再按已有验证命令运行 XCTest。
+```
+
+原始材料位于忽略的 `.build/dependency-history/`：两个官方 Git 历史副本、`snapkit4.0.0-typecheck.log`、`range-results.json`。17 个历史标签的公开接口/私有选择器检查及 commit SHA 记录于 `source-checks.json`。下限及当前版本组合的日志、lock 和 xcresult 在 `.build/fixtures/` 对应目录的 `compatibility*.log`、`Compatibility*.xcresult`。Masonry 0.5.0 负向构建日志位于 `both-framework-snapkit4.0.0-masonry0.5.0/compatibility.log`。
+
+最终 `pod lib lint AutoCollapseKit.podspec --use-modular-headers --platforms=ios` 通过，涵盖默认 Core 和全部适配 subspec 的编译与 import 校验。仅使用前述 xcconfig 的部署版本覆盖，未使用允许警告或跳过校验选项。日志为 `.build/dependency-history/range-lint.log`，末尾为 `AutoCollapseKit passed validation`。
+
+## 0.1.1 发布准备
+
+用户授权以 0.1.1 发布本次依赖范围放宽。podspec 版本、CHANGELOG、README 接入示例及 Git tag 示例同步更新为 0.1.1。功能源码不变，沿用前述 82 次测试及历史源码检查；本次重新执行 0.1.1 的本地 lint、远程标签 lint 和 trunk 发布校验，结果在发布完成后记录。
+
+0.1.1 本地 `pod lib lint` 通过，包含所有 subspec 编译和导入，未跳过检查或允许警告。Example 重新 `pod install`，锁文件同步至 0.1.1，实际布局依赖仍为 SnapKit 5.7.1 / Masonry 1.1.0；演示 App 的模拟器构建通过。安装前后比较主工程与 Pods 工程的证书/签名字段及 Bundle ID，保持完全一致。日志位于 `.build/release/0.1.1/local-lint.log`、`demo-install.log`、`demo-build.log`。
