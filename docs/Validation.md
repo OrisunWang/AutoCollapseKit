@@ -155,3 +155,14 @@ python3 scripts/generate-validation.py --combination both --linkage all \
 用户授权以 0.1.1 发布本次依赖范围放宽。podspec 版本、CHANGELOG、README 接入示例及 Git tag 示例同步更新为 0.1.1。功能源码不变，沿用前述 82 次测试及历史源码检查；本次重新执行 0.1.1 的本地 lint、远程标签 lint 和 trunk 发布校验，结果在发布完成后记录。
 
 0.1.1 本地 `pod lib lint` 通过，包含所有 subspec 编译和导入，未跳过检查或允许警告。Example 重新 `pod install`，锁文件同步至 0.1.1，实际布局依赖仍为 SnapKit 5.7.1 / Masonry 1.1.0；演示 App 的模拟器构建通过。安装前后比较主工程与 Pods 工程的证书/签名字段及 Bundle ID，保持完全一致。日志位于 `.build/release/0.1.1/local-lint.log`、`demo-install.log`、`demo-build.log`。
+
+## 0.1.1 发布结果
+
+2026-10-12 11:50:41（Asia/Shanghai）发布完成，CocoaPods 官方记录为 2026-10-12 03:50:41 UTC。
+
+- 发布提交 `63df0c1675db2977ed306cf9fdb48674f0831008`；main 和带注释的 `0.1.1` 标签已推送至 GitHub，远程标签解引用指向该提交。公开标签 podspec 与本地发布文件完全一致，未覆盖 0.1.0 标签。
+- 本地 `pod lib lint`、从远程标签下载的 `pod spec lint` 均通过，覆盖全部 subspec 编译与导入；未允许警告或跳过检查。库行为沿用依赖范围验证的 82 次 XCTest、0 失败。0.1.1 的演示 App 重新安装本地依赖并构建通过。
+- `pod trunk push AutoCollapseKit.podspec --use-modular-headers` 返回 `AutoCollapseKit (0.1.1) successfully published`；`pod trunk info` 已列出 0.1.1。官方规范接口返回的 JSON 与本地 `pod ipc spec` 完全一致，包含 SnapKit `>= 4.0.1, < 6.0`、Masonry `>= 0.5.3, < 2.0`。
+- [0.1.1 源码](https://github.com/OrisunWang/AutoCollapseKit/tree/0.1.1)；[CocoaPods](https://cocoapods.org/pods/AutoCollapseKit)。README、CHANGELOG 和 Example/Podfile.lock 已同步版本。
+
+原始日志、远程 refs 和规范比对材料位于忽略的 `.build/release/0.1.1/`：`local-lint.log`、`remote-lint.log`、`trunk-push.log`、`trunk-after.log`、`remote-refs.log`、`local-spec.json`、`trunk-spec.json`。本次没有修改证书、签名配置或 Bundle ID；iOS 13 构建运行的既有限制仍然保留。
